@@ -291,6 +291,18 @@ class TestSubarray(TestCase):
             np.dtype(([('a', [('a', 'i4', 6)], (2, 1)), ('b', 'f8', (1, 3))], (2, 2))),
             np.dtype(([('a', [('a', 'u4', 6)], (2, 1)), ('b', 'f8', (1, 3))], (2, 2))))
 
+    def test_shape_list(self):
+        """Tests that specifying shape as list exists gracefully"""
+        dt1 = np.dtype([('head', 'f8', (1,))])
+        x1 = np.zeros(1, dtype=dt1)
+        self.assertEqual(str(x1), "[([0.0],)]")
+        # list dtype created segfaults
+        dt2 = np.dtype([('head', 'f8', [1])])
+        x2 = np.zeros(1, dtype=dt2)
+        self.assertEqual(str(x2), "[([0.0],)]")
+        # perhaps, when fixed, it will raise a value error?
+        #self.assertRaises(ValueError, str, x2)
+
 class TestMonsterType(TestCase):
     """Test deeply nested subtypes."""
     def test1(self):
