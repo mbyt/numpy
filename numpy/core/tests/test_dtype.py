@@ -292,16 +292,19 @@ class TestSubarray(TestCase):
             np.dtype(([('a', [('a', 'u4', 6)], (2, 1)), ('b', 'f8', (1, 3))], (2, 2))))
 
     def test_shape_list(self):
-        """Tests that specifying shape as list exists gracefully"""
+        """Tests that specifying shape as list exists gracefully, see #4009"""
+        # in #4009 segfault only happened, when calling str() on the
+        # resulting array. Therefore, we first check shapes of type
+        # tuple and int still work as expected.
         dt1 = np.dtype([('head', 'f8', (1,))])
         x1 = np.zeros(1, dtype=dt1)
         self.assertEqual(str(x1), "[([0.0],)]")
-        # list dtype created segfaults
-        dt2 = np.dtype([('head', 'f8', [1])])
+        dt2 = np.dtype([('head', 'f8', 1)])
         x2 = np.zeros(1, dtype=dt2)
-        self.assertEqual(str(x2), "[([0.0],)]")
-        # perhaps, when fixed, it will raise a value error?
-        #self.assertRaises(ValueError, str, x2)
+        self.assertEqual(str(x2), "[(0.0,)]")
+        # exit gracefully when providing a shape which is not a tuple or
+        # list
+        self.assertRaises(ValueError, np.dtype, [('head', 'f8', [1])])
 
 class TestMonsterType(TestCase):
     """Test deeply nested subtypes."""

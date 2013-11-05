@@ -284,6 +284,13 @@ _convert_from_tuple(PyObject *obj)
          * and reset the type to NPY_VOID with
          * a new fields attribute.
          */
+
+        if (!PyTuple_Check(val) && !PyInt_Check(val)) {
+            PyErr_SetString(PyExc_ValueError,
+                    "shape must be fixed-type tuple or integer.");
+            goto fail;
+        }
+
         PyArray_Dims shape = {NULL, -1};
         PyArray_Descr *newdescr;
 
